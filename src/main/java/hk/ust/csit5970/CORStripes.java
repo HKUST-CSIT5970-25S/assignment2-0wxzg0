@@ -46,6 +46,7 @@ public class CORStripes extends Configured implements Tool {
 			while (doc_tokenizer.hasMoreTokens()) {
 				String word = doc_tokenizer.nextToken();
         		context.write(new Text(word), new IntWritable(1));
+			}
 		}
 	}
 
@@ -162,7 +163,8 @@ public class CORStripes extends Configured implements Tool {
 				}
 				reader.close();
 				LOG.info("finished！");
-			} catch (Exception e) {
+			} 
+			catch (Exception e) {
 				System.out.println(e.getMessage());
 			}
 		}
@@ -199,6 +201,7 @@ public class CORStripes extends Configured implements Tool {
 
 				double cor = (double) freq / (freqLeft * freqRight);
 				context.write(new PairOfStrings(key.toString(), neighbor.toString()), new DoubleWritable(cor));
+			}
 		}
 	}
 
@@ -323,4 +326,5 @@ public class CORStripes extends Configured implements Tool {
 	public static void main(String[] args) throws Exception {
 		ToolRunner.run(new CORStripes(), args);
 	}
+
 }

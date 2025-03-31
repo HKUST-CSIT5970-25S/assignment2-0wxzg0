@@ -98,6 +98,8 @@ public class CORPairs extends Configured implements Tool {
 			for (int i = 0; i < wordList.size(); i++) {
 				for (int j = i + 1; j < wordList.size(); j++) {
 					context.write(new PairOfStrings(wordList.get(i), wordList.get(j)), new IntWritable(1));
+				}
+			}
 		}
 	}
 
