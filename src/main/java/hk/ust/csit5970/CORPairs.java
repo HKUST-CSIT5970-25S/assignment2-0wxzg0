@@ -191,14 +191,7 @@ public class CORPairs extends Configured implements Tool {
 
 			double cor = (double) freq / (freqLeft * freqRight);
 
-			TreeSet<PairOfStrings> sortedPairs = new TreeSet<PairOfStrings>(PAIR_COMPARATOR);
-		
-			sortedPairs.add(new PairOfStrings(leftWord, rightWord));
-		
-
-			for (PairOfStrings pair : sortedPairs) {
-				context.write(pair, new DoubleWritable(cor));
-			}
+			context.write(key, new DoubleWritable(cor));
 
 		}
 	}
