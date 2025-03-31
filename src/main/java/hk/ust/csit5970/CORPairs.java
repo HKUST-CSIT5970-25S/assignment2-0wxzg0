@@ -180,7 +180,7 @@ public class CORPairs extends Configured implements Tool {
 
 			double cor = (double) freq / (freqLeft * freqRight);
 
-			TreeSet<PairOfStrings> sortedPairs = new TreeSet<String>((p1, p2) -> {
+			TreeSet<PairOfStrings> sortedPairs = new TreeSet<PairOfStrings>((p1, p2) -> {
 				int cmp = p1.getLeftElement().compareTo(p2.getLeftElement());
 				if (cmp != 0) return cmp;
 				return p1.getRightElement().compareTo(p2.getRightElement());
@@ -188,7 +188,7 @@ public class CORPairs extends Configured implements Tool {
 		
 			sortedPairs.add(new PairOfStrings(leftWord, rightWord));
 		
-			
+
 			for (PairOfStrings pair : sortedPairs) {
 				context.write(pair, new DoubleWritable(cor));
 			}

@@ -193,7 +193,7 @@ public class CORStripes extends Configured implements Tool {
 				}
 			}
 
-			TreeSet<PairOfStrings> sortedPairs = new TreeSet<String>((p1, p2) -> {
+			TreeSet<PairOfStrings> sortedPairs = new TreeSet<PairOfStrings>((p1, p2) -> {
 				int cmp = p1.getLeftElement().compareTo(p2.getLeftElement());
 				if (cmp != 0) return cmp;
 				return p1.getRightElement().compareTo(p2.getRightElement());
