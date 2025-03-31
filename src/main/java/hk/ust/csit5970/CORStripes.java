@@ -193,6 +193,12 @@ public class CORStripes extends Configured implements Tool {
 				}
 			}
 
+			TreeSet<PairOfStrings> sortedPairs = new TreeSet<String>((p1, p2) -> {
+				int cmp = p1.getLeftElement().compareTo(p2.getLeftElement());
+				if (cmp != 0) return cmp;
+				return p1.getRightElement().compareTo(p2.getRightElement());
+			});
+
 			int freqLeft = word_total_map.get(key.toString());
 			for (Map.Entry<Writable, Writable> entry : combinedStripe.entrySet()) {
 				Text neighbor = (Text) entry.getKey();
@@ -200,7 +206,10 @@ public class CORStripes extends Configured implements Tool {
 				int freq = ((IntWritable) entry.getValue()).get();
 
 				double cor = (double) freq / (freqLeft * freqRight);
-				context.write(new PairOfStrings(key.toString(), neighbor.toString()), new DoubleWritable(cor));
+				sortedPairs.add(new PairOfStrings(key.toString(), neighbor.toString()));
+			}
+			for (PairOfStrings pair : sortedPairs) {
+				context.write(pair, new DoubleWritable(cor));
 			}
 		}
 	}
