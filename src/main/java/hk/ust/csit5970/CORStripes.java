@@ -215,12 +215,12 @@ public class CORStripes extends Configured implements Tool {
 				double cor = (double) freq / (freqLeft * freqRight);
 					
 				if (key.toString().compareTo(neighbor.toString()) < 0) {
-					context.write(new PairOfStrings(key.toString(), neighbor.toString()), new DoubleWritable(cor));
-					//sortedPairs.put(new PairOfStrings(key.toString(), neighbor.toString()), cor);
+					//context.write(new PairOfStrings(key.toString(), neighbor.toString()), new DoubleWritable(cor));
+					sortedPairs.put(new PairOfStrings(key.toString(), neighbor.toString()), cor);
 				}
 			}
 			for (Map.Entry<PairOfStrings, Double> entry : sortedPairs.entrySet()) {
-				//context.write(entry.getKey(), new DoubleWritable(entry.getValue()));
+				context.write(entry.getKey(), new DoubleWritable(entry.getValue()));
 			}
 		}
 	}
