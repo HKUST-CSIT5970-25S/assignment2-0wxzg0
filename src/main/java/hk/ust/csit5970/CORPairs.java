@@ -90,11 +90,11 @@ public class CORPairs extends Configured implements Tool {
 			/*
 			 * TODO: Your implementation goes here.
 			 */
-			Set<String> words = new TreeSet<>();
+			Set<String> words = new TreeSet<String>();
 			while (doc_tokenizer.hasMoreTokens()) {
 				words.add(doc_tokenizer.nextToken());
 			}
-			List<String> wordList = new ArrayList<>(words);
+			List<String> wordList = new ArrayList<String>(words);
 			for (int i = 0; i < wordList.size(); i++) {
 				for (int j = i + 1; j < wordList.size(); j++) {
 					context.write(new PairOfStrings(wordList.get(i), wordList.get(j)), new IntWritable(1));
