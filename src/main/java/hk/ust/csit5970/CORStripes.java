@@ -205,7 +205,7 @@ public class CORStripes extends Configured implements Tool {
 				}
 			}
 
-			TreeMap<PairOfStrings, Double> sortedPairs = new TreeSet<PairOfStrings, Double>(PAIR_COMPARATOR);
+			TreeMap<PairOfStrings, Double> sortedPairs = new TreeMap<PairOfStrings, Double>(PAIR_COMPARATOR);
 
 			int freqLeft = word_total_map.get(key.toString());
 			for (Map.Entry<Writable, Writable> entry : combinedStripe.entrySet()) {
