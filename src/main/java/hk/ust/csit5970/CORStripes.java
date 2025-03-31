@@ -212,12 +212,15 @@ public class CORStripes extends Configured implements Tool {
 				Text neighbor = (Text) entry.getKey();
 				int freqRight = word_total_map.get(neighbor.toString());
 				int freq = ((IntWritable) entry.getValue()).get();
-
 				double cor = (double) freq / (freqLeft * freqRight);
-				sortedPairs.put(new PairOfStrings(key.toString(), neighbor.toString()), cor);
+					
+				if (key.toString().compareTo(neighbor.toString()) < 0) {
+					context.write(new PairOfStrings(key.toString(), neighbor.toString()), new DoubleWritable(cor));
+					//sortedPairs.put(new PairOfStrings(key.toString(), neighbor.toString()), cor);
+				}
 			}
 			for (Map.Entry<PairOfStrings, Double> entry : sortedPairs.entrySet()) {
-				context.write(entry.getKey(), new DoubleWritable(entry.getValue()));
+				//context.write(entry.getKey(), new DoubleWritable(entry.getValue()));
 			}
 		}
 	}
