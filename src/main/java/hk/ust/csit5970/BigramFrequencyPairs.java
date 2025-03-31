@@ -114,7 +114,10 @@ public class BigramFrequencyPairs extends Configured implements Tool {
                 for (IntWritable value : values) {
                     marginalCount += value.get();
                 }
-            } else {
+				MARGINAL_COUNT.set(marginalCount);
+				context.write(key, MARGINAL_COUNT);
+			}
+			else {
                 // (Wn-1, Wn): calculate relative frequency
                 int bigramCount = 0;
                 for (IntWritable value : values) {
