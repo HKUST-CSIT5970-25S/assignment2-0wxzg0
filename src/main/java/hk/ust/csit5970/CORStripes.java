@@ -114,15 +114,15 @@ public class CORStripes extends Configured implements Tool {
 					Text neighbor = (Text) entry.getKey();
 					IntWritable count = (IntWritable) entry.getValue();
 
-					if (combinedStripe.containsKey(neighbor)) {
-						IntWritable existingCount = (IntWritable) combinedStripe.get(neighbor);
-						combinedStripe.put(neighbor, new IntWritable(existingCount.get() + count.get()));
+					if (stripe_sum.containsKey(neighbor)) {
+						IntWritable existingCount = (IntWritable) stripe_sum.get(neighbor);
+						stripe_sum.put(neighbor, new IntWritable(existingCount.get() + count.get()));
 					} else {
-						combinedStripe.put(neighbor, count);
+						stripe_sum.put(neighbor, count);
 					}
 				}
 			}
-		context.write(key, combinedStripe);
+		context.write(key, stripe_sum);
 		}
 	}
 
