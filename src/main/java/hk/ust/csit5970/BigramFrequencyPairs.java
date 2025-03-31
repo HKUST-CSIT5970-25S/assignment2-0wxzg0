@@ -107,14 +107,15 @@ public class BigramFrequencyPairs extends Configured implements Tool {
 			 */
 			// calculate P(Wn|Wn-1) for all n
 			String rightElement = key.getRightElement();
+			int marginalCount = 0;
 
             if (rightElement.equals("*")) {
                 // (Wn-1): calculate total count of Wn-1
-                int marginalCount = 0;
+                marginalCount = 0;
                 for (IntWritable value : values) {
                     marginalCount += value.get();
                 }
-				VALUE.set(marginalCount);
+				VALUE.set((float)marginalCount);
 				context.write(key, VALUE);
 			}
 			else {
