@@ -60,7 +60,7 @@ public class BigramFrequencyPairs extends Configured implements Tool {
 					BIGRAM.set(previousWord, words[0]);
 					context.write(BIGRAM, ONE);
 
-					BIGRAM.set(previousWord, "*");
+					BIGRAM.set(previousWord, " ");
 					context.write(BIGRAM, ONE);
 				}
 	
@@ -71,7 +71,7 @@ public class BigramFrequencyPairs extends Configured implements Tool {
 						BIGRAM.set(w1, w2);
 						context.write(BIGRAM, ONE);
 
-						BIGRAM.set(w1, "*");
+						BIGRAM.set(w1, " ");
 						context.write(BIGRAM, ONE);
 					}
 				}
@@ -109,7 +109,7 @@ public class BigramFrequencyPairs extends Configured implements Tool {
 			// calculate P(Wn|Wn-1) for all n
 			String rightElement = key.getRightElement();
 
-            if (rightElement.equals("*")) {
+            if (rightElement.equals(" ")) {
                 // (Wn-1): calculate total count of Wn-1
 				marginalCount = 0;
                 for (IntWritable value : values) {
