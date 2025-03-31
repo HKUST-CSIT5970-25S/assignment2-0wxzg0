@@ -98,6 +98,7 @@ public class BigramFrequencyPairs extends Configured implements Tool {
 
 		// Reuse objects.
 		private final static FloatWritable VALUE = new FloatWritable();
+		private int marginalCount = 0;
 
 		@Override
 		public void reduce(PairOfStrings key, Iterable<IntWritable> values,
@@ -107,11 +108,10 @@ public class BigramFrequencyPairs extends Configured implements Tool {
 			 */
 			// calculate P(Wn|Wn-1) for all n
 			String rightElement = key.getRightElement();
-			int marginalCount = 0;
 
             if (rightElement.equals("*")) {
                 // (Wn-1): calculate total count of Wn-1
-                marginalCount = 0;
+				marginalCount = 0;
                 for (IntWritable value : values) {
                     marginalCount += value.get();
                 }
