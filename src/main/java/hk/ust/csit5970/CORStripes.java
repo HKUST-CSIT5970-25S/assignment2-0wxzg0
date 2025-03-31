@@ -172,6 +172,12 @@ public class CORStripes extends Configured implements Tool {
 		/*
 		 * TODO: Write your second-pass Reducer here.
 		 */
+		private static final Comparator<PairOfStrings> PAIR_COMPARATOR = (p1, p2) -> {
+			int cmp = p1.getLeftElement().compareTo(p2.getLeftElement());
+			if (cmp != 0) return cmp;
+			return p1.getRightElement().compareTo(p2.getRightElement());
+		};
+
 		@Override
 		protected void reduce(Text key, Iterable<MapWritable> values, Context context) throws IOException, InterruptedException {
 			/*
@@ -193,11 +199,7 @@ public class CORStripes extends Configured implements Tool {
 				}
 			}
 
-			TreeSet<PairOfStrings> sortedPairs = new TreeSet<PairOfStrings>((p1, p2) -> {
-				int cmp = p1.getLeftElement().compareTo(p2.getLeftElement());
-				if (cmp != 0) return cmp;
-				return p1.getRightElement().compareTo(p2.getRightElement());
-			});
+			TreeSet<PairOfStrings> sortedPairs = new TreeSet<PairOfStrings>(PAIR_COMPARATOR);
 
 			int freqLeft = word_total_map.get(key.toString());
 			for (Map.Entry<Writable, Writable> entry : combinedStripe.entrySet()) {

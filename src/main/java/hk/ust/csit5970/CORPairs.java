@@ -164,6 +164,12 @@ public class CORPairs extends Configured implements Tool {
 		/*
 		 * TODO: write your second-pass Reducer here.
 		 */
+
+		private static final Comparator<PairOfStrings> PAIR_COMPARATOR = (p1, p2) -> {
+			int cmp = p1.getLeftElement().compareTo(p2.getLeftElement());
+			if (cmp != 0) return cmp;
+			return p1.getRightElement().compareTo(p2.getRightElement());
+		};
 		@Override
 		protected void reduce(PairOfStrings key, Iterable<IntWritable> values, Context context) throws IOException, InterruptedException {
 			/*
@@ -180,11 +186,7 @@ public class CORPairs extends Configured implements Tool {
 
 			double cor = (double) freq / (freqLeft * freqRight);
 
-			TreeSet<PairOfStrings> sortedPairs = new TreeSet<PairOfStrings>((p1, p2) -> {
-				int cmp = p1.getLeftElement().compareTo(p2.getLeftElement());
-				if (cmp != 0) return cmp;
-				return p1.getRightElement().compareTo(p2.getRightElement());
-			});
+			TreeSet<PairOfStrings> sortedPairs = new TreeSet<PairOfStrings>(PAIR_COMPARATOR);
 		
 			sortedPairs.add(new PairOfStrings(leftWord, rightWord));
 		
