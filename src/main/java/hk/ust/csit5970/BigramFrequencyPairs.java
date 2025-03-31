@@ -44,6 +44,8 @@ public class BigramFrequencyPairs extends Configured implements Tool {
 		private static final IntWritable ONE = new IntWritable(1);
 		private static final PairOfStrings BIGRAM = new PairOfStrings();
 
+		private String previousWord = null;
+
 		@Override
 		public void map(LongWritable key, Text value, Context context)
 				throws IOException, InterruptedException {
@@ -53,22 +55,38 @@ public class BigramFrequencyPairs extends Configured implements Tool {
 			/*
 			 * TODO: Your implementation goes here.
 			 */
-			if (words.length > 1){
-				String previous_word = words[0];
-				for (int i = 1; i < words.length; i++) {
-					String w = words[i];
-					if (w.length() == 0) {
-						continue;
-					}
-					BIGRAM.set(previous_word, w);
+			if (words.length > 0) {
+				if (previousWord != null && words[0].length() > 0) {
+					BIGRAM.set(previousWord, words[0]);
 					context.write(BIGRAM, ONE);
 
-					// Emit the special key (Wn-1, "*") to track total count of Wn-1
-					BIGRAM.set(previous_word, "*");
+					BIGRAM.set(previousWord, "*");
 					context.write(BIGRAM, ONE);
-
-					previous_word = w;
 				}
+	
+				for (int i = 0; i < words.length - 1; i++) {
+					String w1 = words[i];
+					String w2 = words[i + 1];
+					if (w1.length() > 0 && w2.length() > 0) {
+						BIGRAM.set(w1, w2);
+						context.write(BIGRAM, ONE);
+
+						BIGRAM.set(w1, "*");
+						context.write(BIGRAM, ONE);
+					}
+				}
+	
+				String lastWord = words[words.length - 1];
+				if (!isPunctuation(lastWord)) {
+					previousWord = lastWord;
+				} else {
+					previousWord = null;
+				}
+			}
+		}
+
+		private boolean isPunctuation(String word) {
+			return word.matches(".*\\p{Punct}.*");
 		}
 	}
 

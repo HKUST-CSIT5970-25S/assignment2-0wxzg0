@@ -45,6 +45,8 @@ public class BigramFrequencyStripes extends Configured implements Tool {
 		private static final Text KEY = new Text();
 		private static final HashMapStringIntWritable STRIPE = new HashMapStringIntWritable();
 
+		private String previousWord = null;
+
 		@Override
 		public void map(LongWritable key, Text value, Context context)
 				throws IOException, InterruptedException {
@@ -54,7 +56,14 @@ public class BigramFrequencyStripes extends Configured implements Tool {
 			/*
 			 * TODO: Your implementation goes here.
 			 */
-			if (words.length > 1) {
+			if (words.length > 0) {
+				if (previousWord != null && words[0].length() > 0) {
+					KEY.set(previousWord);
+					STRIPE.increment(words[0]);
+					context.write(KEY, STRIPE);
+					STRIPE.clear();
+				}
+
 				for (int i = 0; i < words.length - 1; i++) {
 					String currentWord = words[i];
 					String nextWord = words[i + 1];
@@ -69,7 +78,16 @@ public class BigramFrequencyStripes extends Configured implements Tool {
 					context.write(KEY, STRIPE);
 					STRIPE.clear();
 				}
+				String lastWord = words[words.length - 1];
+				if (!isPunctuation(lastWord)) {
+					previousWord = lastWord;
+				} else {
+					previousWord = null;
+				}
 			}
+		}
+		private boolean isPunctuation(String word) {
+			return word.matches(".*\\p{Punct}.*");
 		}
 	}
 
