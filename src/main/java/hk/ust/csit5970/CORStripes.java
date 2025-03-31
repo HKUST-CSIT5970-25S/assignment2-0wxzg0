@@ -43,6 +43,9 @@ public class CORStripes extends Configured implements Tool {
 			/*
 			 * TODO: Your implementation goes here.
 			 */
+			while (doc_tokenizer.hasMoreTokens()) {
+				String word = doc_tokenizer.nextToken();
+        		context.write(new Text(word), new IntWritable(1));
 		}
 	}
 
@@ -56,6 +59,11 @@ public class CORStripes extends Configured implements Tool {
 			/*
 			 * TODO: Your implementation goes here.
 			 */
+			int sum = 0;
+			for (IntWritable value : values) {
+				sum += value.get();
+			}
+			context.write(key, new IntWritable(sum));
 		}
 	}
 
@@ -75,6 +83,16 @@ public class CORStripes extends Configured implements Tool {
 			/*
 			 * TODO: Your implementation goes here.
 			 */
+			List<String> sorted_word_list = new ArrayList<String>(sorted_word_set);
+			for (int i = 0; i < sorted_word_list.size(); i++) {
+				MapWritable stripe = new MapWritable();
+				for (int j = 0; j < sorted_word_list.size(); j++) {
+					if (i != j) {
+						stripe.put(new Text(sorted_word_list.get(j)), new IntWritable(1));
+					}
+				}
+				context.write(new Text(sorted_word_list.get(i)), stripe);
+			}
 		}
 	}
 
@@ -89,6 +107,21 @@ public class CORStripes extends Configured implements Tool {
 			/*
 			 * TODO: Your implementation goes here.
 			 */
+			MapWritable stripe_sum = new MapWritable();
+			for(MapWritable stripe : values) {
+				for (Map.Entry<Writable, Writable> entry : stripe.entrySet()) {
+					Text neighbor = (Text) entry.getKey();
+					IntWritable count = (IntWritable) entry.getValue();
+
+					if (combinedStripe.containsKey(neighbor)) {
+						IntWritable existingCount = (IntWritable) combinedStripe.get(neighbor);
+						combinedStripe.put(neighbor, new IntWritable(existingCount.get() + count.get()));
+					} else {
+						combinedStripe.put(neighbor, count);
+					}
+				}
+			}
+		context.write(key, combinedStripe);
 		}
 	}
 
@@ -142,6 +175,30 @@ public class CORStripes extends Configured implements Tool {
 			/*
 			 * TODO: Your implementation goes here.
 			 */
+			MapWritable combinedStripe = new MapWritable();
+
+			for (MapWritable stripe : values) {
+				for (Map.Entry<Writable, Writable> entry : stripe.entrySet()) {
+					Text neighbor = (Text) entry.getKey();
+					IntWritable count = (IntWritable) entry.getValue();
+
+					if (combinedStripe.containsKey(neighbor)) {
+						IntWritable existingCount = (IntWritable) combinedStripe.get(neighbor);
+						combinedStripe.put(neighbor, new IntWritable(existingCount.get() + count.get()));
+					} else {
+						combinedStripe.put(neighbor, count);
+					}
+				}
+			}
+
+			int freqLeft = word_total_map.get(key.toString());
+			for (Map.Entry<Writable, Writable> entry : combinedStripe.entrySet()) {
+				Text neighbor = (Text) entry.getKey();
+				int freqRight = word_total_map.get(neighbor.toString());
+				int freq = ((IntWritable) entry.getValue()).get();
+
+				double cor = (double) freq / (freqLeft * freqRight);
+				context.write(new PairOfStrings(key.toString(), neighbor.toString()), new DoubleWritable(cor));
 		}
 	}
 

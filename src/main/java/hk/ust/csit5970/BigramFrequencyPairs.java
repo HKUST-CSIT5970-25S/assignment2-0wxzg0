@@ -53,6 +53,22 @@ public class BigramFrequencyPairs extends Configured implements Tool {
 			/*
 			 * TODO: Your implementation goes here.
 			 */
+			if (words.length > 1){
+				String previous_word = words[0];
+				for (int i = 1; i < words.length; i++) {
+					String w = words[i];
+					if (w.length() == 0) {
+						continue;
+					}
+					BIGRAM.set(previous_word, w);
+					context.write(BIGRAM, ONE);
+
+					// Emit the special key (Wn-1, "*") to track total count of Wn-1
+					BIGRAM.set(previous_word, "*");
+					context.write(BIGRAM, ONE);
+
+					previous_word = w;
+				}
 		}
 	}
 
@@ -71,6 +87,26 @@ public class BigramFrequencyPairs extends Configured implements Tool {
 			/*
 			 * TODO: Your implementation goes here.
 			 */
+			// calculate P(Wn|Wn-1) for all n
+			String rightElement = key.getRightElement();
+
+            if (rightElement.equals("*")) {
+                // (Wn-1): calculate total count of Wn-1
+                marginalCount = 0;
+                for (IntWritable value : values) {
+                    marginalCount += value.get();
+                }
+            } else {
+                // (Wn-1, Wn): calculate relative frequency
+                int bigramCount = 0;
+                for (IntWritable value : values) {
+                    bigramCount += value.get();
+                }
+                RELATIVE_FREQUENCY.set((float) bigramCount / marginalCount);
+                context.write(key, RELATIVE_FREQUENCY);
+            }
+
+
 		}
 	}
 	
@@ -84,6 +120,13 @@ public class BigramFrequencyPairs extends Configured implements Tool {
 			/*
 			 * TODO: Your implementation goes here.
 			 */
+			// count up bigrams and (Wn-1, *)
+			int sum = 0;
+            for (IntWritable value : values) {
+                sum += value.get();
+            }
+            SUM.set(sum);
+            context.write(key, SUM);
 		}
 	}
 

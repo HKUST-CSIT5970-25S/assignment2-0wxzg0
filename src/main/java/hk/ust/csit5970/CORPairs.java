@@ -53,6 +53,10 @@ public class CORPairs extends Configured implements Tool {
 			/*
 			 * TODO: Your implementation goes here.
 			 */
+			while (doc_tokenizer.hasMoreTokens()) {
+				String word = doc_tokenizer.nextToken();
+				context.write(new Text(word), new IntWritable(1));
+			}
 		}
 	}
 
@@ -66,6 +70,11 @@ public class CORPairs extends Configured implements Tool {
 			/*
 			 * TODO: Your implementation goes here.
 			 */
+			int sum = 0;
+			for (IntWritable value : values) {
+				sum += value.get();
+			}
+			context.write(key, new IntWritable(sum));
 		}
 	}
 
@@ -81,6 +90,14 @@ public class CORPairs extends Configured implements Tool {
 			/*
 			 * TODO: Your implementation goes here.
 			 */
+			Set<String> words = new TreeSet<>();
+			while (doc_tokenizer.hasMoreTokens()) {
+				words.add(doc_tokenizer.nextToken());
+			}
+			List<String> wordList = new ArrayList<>(words);
+			for (int i = 0; i < wordList.size(); i++) {
+				for (int j = i + 1; j < wordList.size(); j++) {
+					context.write(new PairOfStrings(wordList.get(i), wordList.get(j)), new IntWritable(1));
 		}
 	}
 
@@ -93,6 +110,11 @@ public class CORPairs extends Configured implements Tool {
 			/*
 			 * TODO: Your implementation goes here.
 			 */
+			int sum = 0;
+			for (IntWritable value : values) {
+				sum += value.get();
+			}
+			context.write(key, new IntWritable(sum));
 		}
 	}
 
@@ -145,6 +167,17 @@ public class CORPairs extends Configured implements Tool {
 			/*
 			 * TODO: Your implementation goes here.
 			 */
+			int freq = 0;
+			for (IntWritable value : values) {
+				freq += value.get();
+			}
+			String leftWord = key.getLeftElement();
+			String rightWord = key.getRightElement();
+			int freqLeft = word_total_map.get(leftWord);
+			int freqRight = word_total_map.get(rightWord);
+
+			double cor = (double) freq / (freqLeft * freqRight);
+			context.write(key, new DoubleWritable(cor));
 		}
 	}
 
